@@ -32,7 +32,7 @@ export default function Navbar() {
                 height: '64px'
             }}>
                 {/* Left/Center Logo */}
-                <Link to={isLoggedIn ? "/app" : "/"} style={{
+                <Link to="/" style={{
                     fontSize: '1.25rem',
                     fontWeight: '700',
                     color: 'var(--primary)',
@@ -84,7 +84,7 @@ export default function Navbar() {
 
                     {isLoggedIn && (
                         <>
-                            <Link to="/orders" className="btn-text" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <Link to="/my-orders" className="btn-text" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 {t('myOrders')}
                             </Link>
                             <button onClick={handleLogout} className="btn-text">

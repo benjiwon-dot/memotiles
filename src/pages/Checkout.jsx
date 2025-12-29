@@ -4,8 +4,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { CreditCard, Image as ImageIcon } from 'lucide-react';
 
+import { createOrder } from '../utils/orders';
+
 export default function Checkout() {
-    const { cart: contextCart, createOrder, t } = useApp();
+    const { cart: contextCart, t } = useApp();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -25,8 +27,13 @@ export default function Checkout() {
 
     const handlePay = (e) => {
         e.preventDefault();
-        createOrder(shipping);
-        navigate('/orders');
+        const newOrder = createOrder({
+            items: cart,
+            total,
+            currency: '฿',
+            shipping
+        });
+        navigate(`/order-success?orderId=${newOrder.id}`);
     };
 
     if (cart.length === 0) {

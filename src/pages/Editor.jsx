@@ -1,27 +1,62 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { Upload, Plus, ZoomIn, ZoomOut, RotateCw, Check, ArrowRight, Image as ImageIcon } from 'lucide-react';
+import { getOrders, canEdit, updateOrderItems } from '../utils/orders';
 
-
-
-export default function Dashboard() {
-    const { tilesReadyCount, addTileToCart, t } = useApp();
+export default function Editor() {
+    const { t } = useApp();
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Parse editOrderId from URL
+    const searchParams = new URLSearchParams(location.search);
+    const editOrderId = searchParams.get('editOrderId');
 
     // Local state for dashboard
-    const [uploads, setUploads] = useState(() => {
-        // Initialize with 3 mock photos as requested
-        return Array.from({ length: 3 }).map((_, i) => ({
-            id: Date.now() + i,
-            status: 'needs-crop',
-            filter: 'Original',
-            isCropped: false
-        }));
-    });
+    const [uploads, setUploads] = useState([]);
 
-    // Upload object structure:
-    // { id, status: 'needs-crop' | 'cropped', filter: 'Original', isCropped: false }
+    // Initialize state based on mode
+    useEffect(() => {
+        if (editOrderId) {
+            const orders = getOrders();
+            const order = orders.find(o => o.id === editOrderId);
+
+            if (!order) {
+                alert('Order not found');
+                navigate('/my-orders');
+                return;
+            }
+
+            if (!canEdit(order)) {
+                alert('This order cannot be edited anymore.');
+                navigate('/my-orders');
+                return;
+            }
+
+            // Load items from order
+            // Note: order items structure matches upload structure roughly?
+            // Order items likely have { id, filter, zoom, rotation, status:'cropped' (implied) }
+            // We need to map them back to uploads format if needed.
+            // Assuming order.items are fully compatible or we spread them.
+            // We need to ensure 'status' and 'isCropped' are set correctly.
+            const loadedUploads = order.items.map(item => ({
+                ...item,
+                status: 'cropped',
+                isCropped: true
+            }));
+
+            setUploads(loadedUploads);
+        } else {
+            // Default new order state
+            setUploads(Array.from({ length: 3 }).map((_, i) => ({
+                id: Date.now() + i,
+                status: 'needs-crop',
+                filter: 'Original',
+                isCropped: false
+            })));
+        }
+    }, [editOrderId, navigate]);
 
     const [selectedUploadId, setSelectedUploadId] = useState(null); // Will set in effect
     const [zoom, setZoom] = useState(1);
@@ -29,11 +64,22 @@ export default function Dashboard() {
     const [selectedFilter, setSelectedFilter] = useState('Original');
 
     // Auto-select first photo on mount or if empty
-    React.useEffect(() => {
+    useEffect(() => {
         if (!selectedUploadId && uploads.length > 0) {
             setSelectedUploadId(uploads[0].id);
         }
-    }, []);
+    }, [uploads]);
+
+    // Update controls when selection changes
+    useEffect(() => {
+        const u = uploads.find(up => up.id === selectedUploadId);
+        if (u) {
+            setZoom(u.zoom || 1);
+            setRotation(u.rotation || 0);
+            setSelectedFilter(u.filter || 'Original');
+        }
+    }, [selectedUploadId]);
+
 
     // Extended Filters List
     const FILTERS = [
@@ -83,17 +129,12 @@ export default function Dashboard() {
                 ...u,
                 status: 'cropped',
                 filter: selectedFilter,
+                zoom: zoom,
+                rotation: rotation,
                 isCropped: true // Mark as ready for checkout
             } : u
         );
         setUploads(updatedUploads);
-
-        addTileToCart({
-            id: currentUpload.id,
-            filter: selectedFilter,
-            zoom,
-            rotation
-        });
 
         const next = updatedUploads.find(u => u.status === 'needs-crop');
         if (next) setSelectedUploadId(next.id);
@@ -103,18 +144,40 @@ export default function Dashboard() {
     const handleZoomIn = () => setZoom(z => Math.min(3, z + 0.1));
     const handleZoomOut = () => setZoom(z => Math.max(1, z - 0.1));
 
+    const handleUpdateOrder = () => {
+        // Prepare items for saving
+        // Filter only cropped? Or require all?
+        // Let's assume user must finish cropping all if they added new ones.
+        // Or we just save the valid ones.
+        const validItems = uploads.filter(u => u.isCropped);
+
+        if (validItems.length === 0) return;
+
+        updateOrderItems(editOrderId, validItems);
+        alert('Order updated successfully!');
+        navigate('/my-orders');
+    };
+
     return (
         <div style={{ paddingBottom: '80px' }}>
-            {/* Step Indicator */}
-            <div style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'white', padding: '1rem', textAlign: 'center' }}>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    <span style={{ color: 'var(--primary)' }}>{t('uploadStep')}</span>
-                    <ArrowRight size={14} className="text-secondary" />
-                    <span style={{ color: 'var(--primary)' }}>{t('cropStep')}</span>
-                    <ArrowRight size={14} className="text-secondary" />
-                    <span style={{ color: 'var(--text-tertiary)' }}>{t('checkoutStep')}</span>
+            {/* Step Indicator - Hide in Edit Mode? Or change text? Keep for now but maybe less relevant. */}
+            {!editOrderId && (
+                <div style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'white', padding: '1rem', textAlign: 'center' }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
+                        <span style={{ color: 'var(--primary)' }}>{t('uploadStep')}</span>
+                        <ArrowRight size={14} className="text-secondary" />
+                        <span style={{ color: 'var(--primary)' }}>{t('cropStep')}</span>
+                        <ArrowRight size={14} className="text-secondary" />
+                        <span style={{ color: 'var(--text-tertiary)' }}>{t('checkoutStep')}</span>
+                    </div>
                 </div>
-            </div>
+            )}
+
+            {editOrderId && (
+                <div style={{ borderBottom: '1px solid #FEF3C7', backgroundColor: '#FFFBEB', padding: '1rem', textAlign: 'center', color: '#92400E' }}>
+                    <strong>Editing Order {editOrderId}</strong>
+                </div>
+            )}
 
             <div className="container" style={{
                 marginTop: '2rem',
@@ -410,17 +473,29 @@ export default function Dashboard() {
                         <span style={{ fontWeight: 'bold' }}>{t('tilesCount')}: {uploads.filter(u => u.isCropped).length}</span>
                         <span style={{ marginLeft: '1rem', color: 'var(--text-secondary)' }}>{t('estTotal')}: ฿{uploads.filter(u => u.isCropped).length * 200}</span>
                     </div>
-                    <button
-                        onClick={() => {
-                            const croppedPhotos = uploads.filter(u => u.isCropped);
-                            navigate('/checkout', { state: { orderItems: croppedPhotos } });
-                        }}
-                        disabled={uploads.filter(u => u.isCropped).length === 0}
-                        className="btn btn-primary"
-                        style={{ opacity: uploads.filter(u => u.isCropped).length === 0 ? 0.5 : 1 }}
-                    >
-                        {t('proceedCheckout')}
-                    </button>
+
+                    {editOrderId ? (
+                        <button
+                            onClick={handleUpdateOrder}
+                            disabled={uploads.filter(u => u.isCropped).length === 0}
+                            className="btn btn-primary"
+                            style={{ opacity: uploads.filter(u => u.isCropped).length === 0 ? 0.5 : 1 }}
+                        >
+                            Update Order
+                        </button>
+                    ) : (
+                        <button
+                            onClick={() => {
+                                const croppedPhotos = uploads.filter(u => u.isCropped);
+                                navigate('/checkout', { state: { orderItems: croppedPhotos } });
+                            }}
+                            disabled={uploads.filter(u => u.isCropped).length === 0}
+                            className="btn btn-primary"
+                            style={{ opacity: uploads.filter(u => u.isCropped).length === 0 ? 0.5 : 1 }}
+                        >
+                            {t('proceedCheckout')}
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

@@ -9,7 +9,7 @@ export function AppProvider({ children }) {
     const [language, setLanguage] = useState('EN');
     const [cart, setCart] = useState([]); // Array of tile objects
     const [tilesReadyCount, setTilesReadyCount] = useState(0);
-    const [orders, setOrders] = useState([]);
+
 
     // Mock functions
     const login = () => setIsLoggedIn(true);
@@ -23,19 +23,7 @@ export function AppProvider({ children }) {
         setTilesReadyCount((prev) => prev + 1);
     };
 
-    const createOrder = (shippingDetails) => {
-        const newOrder = {
-            id: Math.floor(Math.random() * 10000).toString(),
-            date: new Date().toISOString(),
-            status: 'Printing',
-            items: [...cart],
-            total: cart.length * 200, // Mock price 200 THB per tile?
-            shipping: shippingDetails
-        };
-        setOrders((prev) => [newOrder, ...prev]);
-        setCart([]);
-        setTilesReadyCount(0);
-    };
+
 
     // Translation Helper
     const t = (key) => {
@@ -51,8 +39,7 @@ export function AppProvider({ children }) {
         cart,
         tilesReadyCount,
         addTileToCart,
-        orders,
-        createOrder,
+
         t
     };
 

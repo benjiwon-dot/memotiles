@@ -21,6 +21,8 @@ export default function Landing() {
         document.getElementById('how-it-works').scrollIntoView({ behavior: 'smooth' });
     };
 
+    const IG_URL = "https://www.instagram.com/runner_better";
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             {/* Hero Section */}
@@ -148,10 +150,14 @@ export default function Landing() {
                     }}>
                         {/* Placeholders for Instagram Grid */}
                         {[...Array(8)].map((_, i) => (
-                            <div
+                            <a
                                 key={i}
+                                href={IG_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="instagram-tile"
                                 style={{
+                                    display: 'block', // Ensure anchor behaves like block
                                     aspectRatio: '1/1',
                                     backgroundColor: '#E5E7EB',
                                     borderRadius: 'var(--radius-md)',
@@ -174,16 +180,22 @@ export default function Landing() {
                                     onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
                                     onMouseLeave={(e) => e.currentTarget.style.opacity = '0'}
                                 >
-                                    Lightbox later
+                                    View on Instagram
                                 </div>
-                            </div>
+                            </a>
                         ))}
                     </div>
 
-                    <button className="btn btn-secondary" style={{ gap: '0.5rem' }}>
+                    <a
+                        href={IG_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-secondary"
+                        style={{ gap: '0.5rem', display: 'inline-flex', alignItems: 'center' }} // inline-flex to match button behavior
+                    >
                         <Instagram size={20} />
                         {t('followUs')}
-                    </button>
+                    </a>
                 </div>
             </section>
 
