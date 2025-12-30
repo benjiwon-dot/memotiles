@@ -5,6 +5,8 @@ import { ArrowRight, Upload, Crop, Truck, Instagram } from 'lucide-react';
 import Footer from '../components/Footer';
 import tileMockup from '../assets/tile_mockup.png';
 
+import HeroHowItWorksMini from '../components/HeroHowItWorksMini';
+
 export default function Landing() {
     const { isLoggedIn, t } = useApp();
     const navigate = useNavigate();
@@ -45,16 +47,20 @@ export default function Landing() {
                     }}>
                         {t('heroTitle')}
                     </h1>
-                    <p style={{
-                        fontSize: '1.25rem',
-                        color: 'var(--text-secondary)',
-                        marginBottom: '2.5rem',
-                        maxWidth: '600px',
-                        marginLeft: 'auto',
-                        marginRight: 'auto'
-                    }}>
-                        {t('heroSubtitle')}
-                    </p>
+                    {t('heroSubtitle') !== 'heroSubtitle' && (
+                        <p style={{
+                            fontSize: '1.25rem',
+                            color: 'var(--text-secondary)',
+                            marginBottom: '2.5rem',
+                            maxWidth: '600px',
+                            marginLeft: 'auto',
+                            marginRight: 'auto'
+                        }}>
+                            {t('heroSubtitle')}
+                        </p>
+                    )}
+
+                    <HeroHowItWorksMini />
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
                         <button
@@ -131,6 +137,29 @@ export default function Landing() {
                             </div>
                             <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem' }}>{t('step3Title')}</h3>
                             <p style={{ color: 'var(--text-secondary)' }}>{t('step3Desc')}</p>
+                        </div>
+                    </div>
+
+                    {/* Delivery Speed Highlight */}
+                    <div style={{
+                        marginTop: '4rem',
+                        padding: '1.5rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                        textAlign: 'center'
+                    }}>
+                        <div style={{ color: 'var(--text-tertiary)' }}>
+                            <Truck size={32} strokeWidth={1.5} />
+                        </div>
+                        <div>
+                            <h3 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                                {t('deliveryHighlightTitle')}
+                            </h3>
+                            <p style={{ fontSize: '1.25rem', fontWeight: '600', color: 'var(--text-tertiary)', marginTop: '0.5rem' }}>
+                                {t('deliveryHighlightSubtitle')}
+                            </p>
                         </div>
                     </div>
                 </div>
