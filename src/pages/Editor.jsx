@@ -62,6 +62,9 @@ export default function Editor() {
     const [zoom, setZoom] = useState(1);
     const [rotation, setRotation] = useState(0);
     const [selectedFilter, setSelectedFilter] = useState('Original');
+    const [isSaving, setIsSaving] = useState(false);
+    const [showToast, setShowToast] = useState(false);
+    const [animatePulse, setAnimatePulse] = useState(false);
 
     // Auto-select first photo on mount or if empty
     useEffect(() => {
@@ -124,6 +127,10 @@ export default function Editor() {
     const handleSaveCrop = () => {
         if (!currentUpload) return;
 
+        setIsSaving(true);
+        setShowToast(true);
+        setAnimatePulse(true);
+
         const updatedUploads = uploads.map(u =>
             u.id === selectedUploadId ? {
                 ...u,
@@ -131,13 +138,22 @@ export default function Editor() {
                 filter: selectedFilter,
                 zoom: zoom,
                 rotation: rotation,
-                isCropped: true // Mark as ready for checkout
+                isCropped: true
             } : u
         );
         setUploads(updatedUploads);
 
+        // Reset states after animation
+        setTimeout(() => setIsSaving(false), 1200);
+        setTimeout(() => setShowToast(false), 2000);
+        setTimeout(() => setAnimatePulse(false), 500);
+
         const next = updatedUploads.find(u => u.status === 'needs-crop');
-        if (next) setSelectedUploadId(next.id);
+        if (next) {
+            setTimeout(() => {
+                setSelectedUploadId(next.id);
+            }, 800);
+        }
     };
 
     // Zoom helpers
@@ -190,7 +206,16 @@ export default function Editor() {
             }}>
 
                 {/* LEFT CONTENT */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', overflow: 'hidden' }}>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '1rem',
+                    position: 'sticky',
+                    top: '2rem',
+                    height: 'fit-content',
+                    maxHeight: 'calc(100vh - 120px)',
+                    zIndex: 10
+                }}>
 
                     {/* Big Dropzone (Only visible when empty) */}
                     {uploads.length === 0 && (
@@ -325,14 +350,17 @@ export default function Editor() {
                     backgroundColor: 'white',
                     borderRadius: 'var(--radius-lg)',
                     boxShadow: 'var(--shadow-sm)',
-                    padding: '2rem',
+                    padding: 'clamp(1rem, 5vw, 2.5rem)',
                     height: 'fit-content',
+                    maxWidth: '100%',
+                    justifySelf: 'center',
+                    width: '100%',
                     transition: 'all 0.3s ease-out'
                 }}>
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: 'Bold', marginBottom: '2rem', textAlign: 'center' }}>{t('cropTitle')}</h2>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: 'Bold', marginBottom: '2rem', textAlign: 'center' }}>{t('cropTitle')}</h2>
 
                     {currentUpload ? (
-                        <div style={{ maxWidth: '480px', margin: '0 auto' }}>
+                        <div style={{ maxWidth: '380px', margin: '0 auto' }}>
                             {/* Preview Frame */}
                             <div style={{
                                 aspectRatio: '1/1',
@@ -441,8 +469,30 @@ export default function Editor() {
                             </div>
 
                             {/* Save Button */}
-                            <button onClick={handleSaveCrop} className="btn btn-primary" style={{ width: '100%', padding: '1rem', fontSize: '1rem' }}>
-                                {currentUpload.status === 'cropped' ? t('updateCrop') : t('saveCrop')}
+                            <button
+                                onClick={handleSaveCrop}
+                                disabled={isSaving}
+                                className="btn btn-primary"
+                                style={{
+                                    width: '100%',
+                                    padding: '1rem',
+                                    fontSize: '1rem',
+                                    backgroundColor: isSaving ? '#10B981' : 'var(--primary)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '0.5rem',
+                                    transition: 'background-color 0.3s'
+                                }}
+                            >
+                                {isSaving ? (
+                                    <>
+                                        <Check size={20} />
+                                        <span>Saved</span>
+                                    </>
+                                ) : (
+                                    currentUpload.status === 'cropped' ? t('updateCrop') : t('saveCrop')
+                                )}
                             </button>
                         </div>
                     ) : (
@@ -469,7 +519,7 @@ export default function Editor() {
                 zIndex: 40
             }}>
                 <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div>
+                    <div className={animatePulse ? 'animate-pulse-brief' : ''}>
                         <span style={{ fontWeight: 'bold' }}>{t('tilesCount')}: {uploads.filter(u => u.isCropped).length}</span>
                         <span style={{ marginLeft: '1rem', color: 'var(--text-secondary)' }}>{t('estTotal')}: ฿{uploads.filter(u => u.isCropped).length * 200}</span>
                     </div>
@@ -498,6 +548,33 @@ export default function Editor() {
                     )}
                 </div>
             </div>
+
+            {/* Toast Notification */}
+            {showToast && (
+                <div
+                    className="animate-toast"
+                    style={{
+                        position: 'fixed',
+                        bottom: '100px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        backgroundColor: '#111827',
+                        color: 'white',
+                        padding: '0.75rem 1.5rem',
+                        borderRadius: '9999px',
+                        fontSize: '0.875rem',
+                        fontWeight: '500',
+                        boxShadow: '0 10px 15px -3px rgba(0,0,0,0.2)',
+                        zIndex: 100,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem'
+                    }}
+                >
+                    <Check size={16} />
+                    Saved to album
+                </div>
+            )}
         </div>
     );
 }

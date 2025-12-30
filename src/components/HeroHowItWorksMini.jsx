@@ -32,17 +32,7 @@ export default function HeroHowItWorksMini() {
     ];
 
     return (
-        <div style={{ width: '100%', maxWidth: '900px', margin: '0 auto 2.5rem' }}>
-            <p style={{
-                fontSize: '0.9rem',
-                fontWeight: '700',
-                color: 'var(--text-primary)',
-                marginBottom: '1.5rem',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em'
-            }}>
-                {t('heroMiniHeadline')}
-            </p>
+        <div style={{ width: '100%', maxWidth: '900px', margin: '0 auto' }}>
             <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(4, 1fr)',

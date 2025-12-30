@@ -49,6 +49,39 @@ export default function Orders() {
 
     const toTitle = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 
+    const getStatusInfo = (status) => {
+        const s = (status || '').toLowerCase();
+        if (['printed', 'shipping', 'shipped'].includes(s)) {
+            return {
+                label: t('orderStatusShippingInProgress'),
+                subtitle: t('orderSubtitleShippingInProgress'),
+                color: '#3730A3',
+                bg: '#E0E7FF'
+            };
+        }
+        if (s === 'delivered') {
+            return {
+                label: t('orderStatusDelivered'),
+                subtitle: t('orderSubtitleDelivered'),
+                color: '#065F46',
+                bg: '#D1FAE5'
+            };
+        }
+        if (s === 'cancelled') {
+            return {
+                label: t('cancelled'),
+                color: '#991B1B',
+                bg: '#FEE2E2'
+            };
+        }
+        // paid, processing
+        return {
+            label: t(s) || toTitle(s),
+            color: '#1E40AF',
+            bg: '#DBEAFE'
+        };
+    };
+
     return (
         <div className="container" style={{ marginTop: '2rem', maxWidth: '800px', paddingBottom: '4rem' }}>
             <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '2rem' }}>{t('ordersTitle')}</h1>
@@ -114,11 +147,11 @@ export default function Orders() {
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
                                         <span style={{ fontWeight: 'bold' }}>{order.id}</span>
                                         <span className="badge" style={{
-                                            backgroundColor: order.status === 'delivered' ? '#D1FAE5' : (order.status === 'cancelled' ? '#FEE2E2' : '#DBEAFE'),
-                                            color: order.status === 'delivered' ? '#065F46' : (order.status === 'cancelled' ? '#991B1B' : '#1E40AF'),
-                                            textTransform: 'capitalize'
+                                            backgroundColor: getStatusInfo(order.status).bg,
+                                            color: getStatusInfo(order.status).color,
+                                            textTransform: 'none'
                                         }}>
-                                            {t(order.status.toLowerCase()) || order.status}
+                                            {getStatusInfo(order.status).label}
                                         </span>
                                     </div>
                                     <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
@@ -147,11 +180,11 @@ export default function Orders() {
                                             <h4 style={{ fontSize: '0.875rem', fontWeight: '600', marginBottom: '1rem' }}>{t('orderStatus')}</h4>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.875rem' }}>
                                                 {/* Simplified Visual Timeline */}
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: ['printed', 'shipped', 'delivered'].includes(order.status) || order.status === 'delivered' ? 'var(--primary)' : 'var(--text-tertiary)' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: ['printed', 'shipping', 'shipped', 'delivered'].includes(order.status) ? 'var(--primary)' : 'var(--text-tertiary)' }}>
                                                     <CheckCircle size={16} /> {t('printing') || 'Printing'}
                                                 </div>
-                                                <div style={{ height: '1px', flex: 1, backgroundColor: ['shipped', 'delivered'].includes(order.status) ? '#10B981' : '#E5E7EB' }}></div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: ['shipped', 'delivered'].includes(order.status) ? 'var(--primary)' : 'var(--text-tertiary)' }}>
+                                                <div style={{ height: '1px', flex: 1, backgroundColor: ['shipping', 'shipped', 'delivered'].includes(order.status) ? '#10B981' : '#E5E7EB' }}></div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: ['shipping', 'shipped', 'delivered'].includes(order.status) ? 'var(--primary)' : 'var(--text-tertiary)' }}>
                                                     <CheckCircle size={16} /> {t('shipped')}
                                                 </div>
                                                 <div style={{ height: '1px', flex: 1, backgroundColor: order.status === 'delivered' ? '#10B981' : '#E5E7EB' }}></div>
@@ -199,9 +232,17 @@ export default function Orders() {
                                                     </button>
                                                 </>
                                             ) : (
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.8rem', backgroundColor: '#F3F4F6', padding: '0.5rem', borderRadius: '4px' }}>
-                                                    <AlertCircle size={14} />
-                                                    {t('orderLocked') || "This order is already in production, so changes are locked."}
+                                                <div style={{ textAlign: 'right' }}>
+                                                    {getStatusInfo(order.status).subtitle ? (
+                                                        <div style={{ color: 'var(--primary)', fontWeight: '600', fontSize: '0.9rem' }}>
+                                                            {getStatusInfo(order.status).subtitle}
+                                                        </div>
+                                                    ) : (
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.8rem', backgroundColor: '#F3F4F6', padding: '0.6rem 0.8rem', borderRadius: '8px' }}>
+                                                            <AlertCircle size={14} />
+                                                            {t('orderLockedDesc')}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>

@@ -6,27 +6,31 @@
   --text-primary: #111827;
   --text-secondary: #6B7280;
   --text-tertiary: #9CA3AF;
-  --primary: #111827; /* Black for premium feel */
+  --primary: #111827;
+  /* Black for premium feel */
   --primary-hover: #374151;
-  --accent: #3B82F6; /* Minimal blue for interactions */
+  --accent: #3B82F6;
+  /* Minimal blue for interactions */
   --danger: #EF4444;
   --border: #E5E7EB;
-  
+
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  
+
   /* Radius */
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 1rem;
-  --radius-xl: 1.5rem; /* For tiles */
+  --radius-xl: 1.5rem;
+  /* For tiles */
 }
 
 @font-face {
   font-family: 'Inter';
-  src: local('Inter'), local('sans-serif'); /* Simulating standard sans logic, relying on system mostly if not imported */
+  src: local('Inter'), local('sans-serif');
+  /* Simulating standard sans logic, relying on system mostly if not imported */
 }
 
 * {
@@ -55,7 +59,8 @@ button {
   font-family: inherit;
 }
 
-input, select {
+input,
+select {
   font-family: inherit;
   outline: none;
 }
@@ -134,4 +139,39 @@ input, select {
   font-weight: 600;
   background-color: var(--bg-primary);
   color: var(--text-secondary);
+}
+
+/* Custom Animations */
+@keyframes pulse-brief {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.08);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-pulse-brief {
+  animation: pulse-brief 0.3s ease-in-out;
+}
+
+@keyframes toast-in {
+  from {
+    transform: translate(-50%, 20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+.animate-toast {
+  animation: toast-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }

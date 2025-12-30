@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { ArrowRight, Upload, Crop, Truck, Instagram } from 'lucide-react';
 import Footer from '../components/Footer';
-import tileMockup from '../assets/tile_mockup.png';
-
 import HeroHowItWorksMini from '../components/HeroHowItWorksMini';
 
 export default function Landing() {
@@ -19,142 +17,164 @@ export default function Landing() {
         }
     };
 
-    const scrollToHowItWorks = () => {
-        document.getElementById('how-it-works').scrollIntoView({ behavior: 'smooth' });
-    };
-
     const IG_URL = "https://www.instagram.com/runner_better";
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#FFFFFF' }}>
             {/* Hero Section */}
             <section style={{
-                padding: '6rem 1rem',
+                padding: '8rem 1rem 4rem',
                 textAlign: 'center',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: '2rem',
+                gap: '1.5rem',
                 background: 'linear-gradient(to bottom, #FFFFFF, #F9FAFB)'
             }}>
                 <div className="container" style={{ maxWidth: '800px' }}>
                     <h1 style={{
-                        fontSize: '3.5rem',
-                        fontWeight: '800',
+                        fontSize: 'clamp(2.5rem, 8vw, 4.5rem)',
+                        fontWeight: '900',
                         lineHeight: '1.1',
-                        marginBottom: '1.5rem',
-                        letterSpacing: '-0.03em'
+                        marginBottom: '0.5rem',
+                        letterSpacing: '-0.04em',
+                        color: '#111827'
                     }}>
                         {t('heroTitle')}
                     </h1>
-                    {t('heroSubtitle') !== 'heroSubtitle' && (
-                        <p style={{
-                            fontSize: '1.25rem',
-                            color: 'var(--text-secondary)',
-                            marginBottom: '2.5rem',
-                            maxWidth: '600px',
-                            marginLeft: 'auto',
-                            marginRight: 'auto'
-                        }}>
-                            {t('heroSubtitle')}
-                        </p>
-                    )}
+                    <p style={{
+                        fontSize: 'clamp(1.125rem, 3vw, 1.5rem)',
+                        fontWeight: '600',
+                        color: 'var(--text-secondary)',
+                        marginBottom: '3rem',
+                        letterSpacing: '-0.01em'
+                    }}>
+                        {t('heroMiniHeadline')}
+                    </p>
 
-                    <HeroHowItWorksMini />
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
                         <button
                             onClick={handleCreateClick}
                             className="btn btn-primary"
                             style={{
-                                fontSize: '1.125rem',
-                                padding: '1rem 2.5rem',
+                                fontSize: '1.6875rem', // ~1.5x of 1.125rem
+                                padding: '1.5rem 4rem', // Scaled proportions
                                 borderRadius: '9999px',
-                                boxShadow: 'var(--shadow-lg)'
+                                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                                fontWeight: '800',
+                                border: 'none',
+                                cursor: 'pointer'
                             }}
                         >
                             {t('createTiles')}
                         </button>
-                        <button onClick={scrollToHowItWorks} className="btn-text" style={{ fontSize: '0.9rem' }}>
-                            {t('howItWorks')}
-                        </button>
                     </div>
-                </div>
-
-                {/* Product Visual */}
-                <div style={{ marginTop: '4rem', width: '100%', display: 'flex', justifyContent: 'center' }}>
-                    {/* Hero image can be replaced by placing a new file at /public/hero/hero-wall.jpg */}
-                    <img
-                        src="/hero/hero-wall.jpg"
-                        alt="Memotiles Wall"
-                        style={{
-                            borderRadius: 'var(--radius-xl)',
-                            boxShadow: 'var(--shadow-xl)',
-                            maxWidth: '600px',
-                            width: '100%',
-                            objectFit: 'cover',
-                            display: 'block'
-                        }}
-                        onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = tileMockup;
-                        }}
-                    />
                 </div>
             </section>
 
-            {/* How it works */}
-            <section id="how-it-works" style={{ padding: '6rem 1rem', backgroundColor: 'white' }}>
+            {/* Image Preview Section (3 Lifestyle Images) */}
+            <section style={{ padding: '2rem 1rem 4rem' }}>
+                <div className="container" style={{ maxWidth: '1200px' }}>
+                    <div className="image-preview-grid" style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(3, 1fr)',
+                        gap: '1.5rem'
+                    }}>
+                        <style dangerouslySetInnerHTML={{
+                            __html: `
+                            @media (max-width: 768px) {
+                                .image-preview-grid {
+                                    grid-template-columns: 1fr !important;
+                                }
+                            }
+                        `}} />
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} style={{
+                                aspectRatio: '4/5',
+                                borderRadius: '2rem',
+                                overflow: 'hidden',
+                                boxShadow: 'var(--shadow-lg)'
+                            }}>
+                                <img
+                                    src={`/assets/landing/lifestyle-${i}.jpg`}
+                                    alt={`Lifestyle ${i}`}
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover',
+                                        display: 'block'
+                                    }}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Steps Section (Peel / Stick / Move / Press) */}
+            <section style={{ padding: '4rem 1rem', backgroundColor: '#FFFFFF' }}>
                 <div className="container">
-                    <h2 style={{ textAlign: 'center', marginBottom: '4rem', fontSize: '2rem', fontWeight: 'bold' }}>{t('howItWorks')}</h2>
+                    <HeroHowItWorksMini />
+                </div>
+            </section>
+
+            {/* How it works Section */}
+            <section id="how-it-works" style={{ padding: '6rem 1rem', backgroundColor: '#F9FAFB' }}>
+                <div className="container">
+                    <h2 style={{ textAlign: 'center', marginBottom: '4rem', fontSize: '2.5rem', fontWeight: '800', letterSpacing: '-0.02em' }}>
+                        {t('howItWorks')}
+                    </h2>
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                        gap: '2rem'
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                        gap: '2.5rem'
                     }}>
                         {/* Step 1 */}
-                        <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '3rem 2rem' }}>
-                            <div style={{ background: '#EFF6FF', padding: '1rem', borderRadius: '50%', marginBottom: '1.5rem', color: '#3B82F6' }}>
-                                <Upload size={32} />
+                        <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '4rem 2rem', borderRadius: '2rem' }}>
+                            <div style={{ background: '#EFF6FF', padding: '1.25rem', borderRadius: '50%', marginBottom: '2rem', color: '#3B82F6' }}>
+                                <Upload size={40} />
                             </div>
-                            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem' }}>{t('step1Title')}</h3>
-                            <p style={{ color: 'var(--text-secondary)' }}>{t('step1Desc')}</p>
+                            <h3 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '1rem' }}>{t('step1Title')}</h3>
+                            <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6' }}>{t('step1Desc')}</p>
                         </div>
 
                         {/* Step 2 */}
-                        <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '3rem 2rem' }}>
-                            <div style={{ background: '#ECFDF5', padding: '1rem', borderRadius: '50%', marginBottom: '1.5rem', color: '#10B981' }}>
-                                <Crop size={32} />
+                        <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '4rem 2rem', borderRadius: '2rem' }}>
+                            <div style={{ background: '#ECFDF5', padding: '1.25rem', borderRadius: '50%', marginBottom: '2rem', color: '#10B981' }}>
+                                <Crop size={40} />
                             </div>
-                            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem' }}>{t('step2Title')}</h3>
-                            <p style={{ color: 'var(--text-secondary)' }}>{t('step2Desc')}</p>
+                            <h3 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '1rem' }}>{t('step2Title')}</h3>
+                            <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6' }}>{t('step2Desc')}</p>
                         </div>
 
                         {/* Step 3 */}
-                        <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '3rem 2rem' }}>
-                            <div style={{ background: '#FFF7ED', padding: '1rem', borderRadius: '50%', marginBottom: '1.5rem', color: '#F97316' }}>
-                                <Truck size={32} />
+                        <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '4rem 2rem', borderRadius: '2rem' }}>
+                            <div style={{ background: '#FFF7ED', padding: '1.25rem', borderRadius: '50%', marginBottom: '2rem', color: '#F97316' }}>
+                                <Truck size={40} />
                             </div>
-                            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem' }}>{t('step3Title')}</h3>
-                            <p style={{ color: 'var(--text-secondary)' }}>{t('step3Desc')}</p>
+                            <h3 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '1rem' }}>{t('step3Title')}</h3>
+                            <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6' }}>{t('step3Desc')}</p>
                         </div>
                     </div>
 
                     {/* Delivery Speed Highlight */}
                     <div style={{
-                        marginTop: '4rem',
-                        padding: '1.5rem',
+                        marginTop: '6rem',
+                        padding: '3rem',
+                        backgroundColor: 'white',
+                        borderRadius: '3rem',
+                        boxShadow: 'var(--shadow-sm)',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        gap: '0.75rem',
+                        gap: '1.5rem',
                         textAlign: 'center'
                     }}>
-                        <div style={{ color: 'var(--text-tertiary)' }}>
-                            <Truck size={32} strokeWidth={1.5} />
+                        <div style={{ color: '#F97316' }}>
+                            <Truck size={48} strokeWidth={1.5} />
                         </div>
                         <div>
-                            <h3 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                            <h3 style={{ fontSize: '2.5rem', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
                                 {t('deliveryHighlightTitle')}
                             </h3>
                             <p style={{ fontSize: '1.25rem', fontWeight: '600', color: 'var(--text-tertiary)', marginTop: '0.5rem' }}>
@@ -166,7 +186,7 @@ export default function Landing() {
             </section>
 
             {/* Real Photos / Instagram */}
-            <section style={{ padding: '6rem 1rem', backgroundColor: '#F9FAFB' }}>
+            <section style={{ padding: '6rem 1rem', backgroundColor: '#FFFFFF' }}>
                 <div className="container" style={{ textAlign: 'center' }}>
                     <h2 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>{t('realWallsTitle')}</h2>
                     <p style={{ color: 'var(--text-secondary)', marginBottom: '3rem' }}>{t('realWallsDesc')}</p>
@@ -177,7 +197,6 @@ export default function Landing() {
                         gap: '1rem',
                         marginBottom: '3rem'
                     }}>
-                        {/* Placeholders for Instagram Grid */}
                         {[...Array(8)].map((_, i) => (
                             <a
                                 key={i}
@@ -186,9 +205,9 @@ export default function Landing() {
                                 rel="noopener noreferrer"
                                 className="instagram-tile"
                                 style={{
-                                    display: 'block', // Ensure anchor behaves like block
+                                    display: 'block',
                                     aspectRatio: '1/1',
-                                    backgroundColor: '#E5E7EB',
+                                    backgroundColor: '#F3F4F6',
                                     borderRadius: 'var(--radius-md)',
                                     position: 'relative',
                                     overflow: 'hidden',
@@ -220,7 +239,7 @@ export default function Landing() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn btn-secondary"
-                        style={{ gap: '0.5rem', display: 'inline-flex', alignItems: 'center' }} // inline-flex to match button behavior
+                        style={{ gap: '0.5rem', display: 'inline-flex', alignItems: 'center' }}
                     >
                         <Instagram size={20} />
                         {t('followUs')}
